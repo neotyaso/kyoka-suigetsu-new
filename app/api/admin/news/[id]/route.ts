@@ -1,11 +1,17 @@
+
 import { NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(
+  req: Request, 
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const id = Number(params.id)
+    const resolvedParams = await params
+    const id = Number(resolvedParams.id)
+    
     const body = await req.json()
     const updatedNews = await prisma.news.update({
       where: { id },
@@ -23,9 +29,14 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(
+  req: Request, 
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const id = Number(params.id)
+    const resolvedParams = await params
+    const id = Number(resolvedParams.id)
+    
     await prisma.news.delete({ where: { id } })
     console.log(`お知らせ(ID: ${id})が削除されました`)
     return NextResponse.json({ success: true, message: '削除しました' })
