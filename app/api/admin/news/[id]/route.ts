@@ -1,4 +1,3 @@
-
 import { NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 
@@ -6,11 +5,11 @@ const prisma = new PrismaClient()
 
 export async function PUT(
   req: Request, 
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> } 
 ) {
   try {
-    const resolvedParams = await params
-    const id = Number(resolvedParams.id)
+    const { id: idStr } = await context.params
+    const id = Number(idStr)
     
     const body = await req.json()
     const updatedNews = await prisma.news.update({
@@ -31,11 +30,11 @@ export async function PUT(
 
 export async function DELETE(
   req: Request, 
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> } 
 ) {
   try {
-    const resolvedParams = await params
-    const id = Number(resolvedParams.id)
+    const { id: idStr } = await context.params
+    const id = Number(idStr)
     
     await prisma.news.delete({ where: { id } })
     console.log(`お知らせ(ID: ${id})が削除されました`)
