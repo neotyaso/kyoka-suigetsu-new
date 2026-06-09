@@ -1,6 +1,6 @@
 import { withAuth } from "next-auth/middleware"
 
-export default withAuth({
+const proxyHandler = withAuth({
   callbacks: {
     authorized: ({ token }) => !!token,
   },
@@ -8,6 +8,8 @@ export default withAuth({
     signIn: "/api/auth/signin",
   },
 })
+
+export default proxyHandler
 
 export const config = {
   matcher: ["/admin/:path*"],
