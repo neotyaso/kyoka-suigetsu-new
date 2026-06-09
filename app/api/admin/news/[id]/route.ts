@@ -1,15 +1,16 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
 export async function PUT(
-  req: Request, 
+  req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id: idStr } = await context.params
     const id = Number(idStr)
+    
     const body = await req.json()
     const updatedNews = await prisma.news.update({
       where: { id },
@@ -19,6 +20,7 @@ export async function PUT(
         date: new Date().toISOString().split('T')[0]
       },
     })
+    console.log(`お知らせ(ID: ${id})が更新されました:`, updatedNews)
     return NextResponse.json({ success: true, news: updatedNews })
   } catch (error) {
     console.error(error)
@@ -27,13 +29,15 @@ export async function PUT(
 }
 
 export async function DELETE(
-  req: Request, 
+  req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id: idStr } = await context.params
     const id = Number(idStr)
+    
     await prisma.news.delete({ where: { id } })
+    console.log(`お知らせ(ID: ${id})が削除されました`)
     return NextResponse.json({ success: true, message: '削除しました' })
   } catch (error) {
     console.error(error)
