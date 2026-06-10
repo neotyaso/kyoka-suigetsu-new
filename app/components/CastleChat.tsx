@@ -47,21 +47,21 @@ export default function CastleChat() {
     <Draggable 
       nodeRef={nodeRef} 
       handle=".drag-handle"
+      enableUserSelectHack={false}
+      bounds="body"                
       onStart={() => setIsDragging(true)}
       onStop={() => setIsDragging(false)}
     >
       <div 
         ref={nodeRef} 
-        className="fixed bottom-6 right-6 z-50 font-sans will-change-transform select-none"
+        className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 font-sans will-change-transform select-none touch-none"
       >
-        {/* ─── チャットウィンドウ ─── */}
         {isOpen && (
-          <div className={`mb-4 w-80 md:w-96 h-125 bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden ${
+          <div className={`mb-4 w-[calc(100vw-32px)] sm:w-80 md:w-96 h-125 max-h-[70vh] bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden ${
             isDragging ? 'transition-none' : 'transition-all duration-300'
           }`}>
             
-            {/* ヘッダー */}
-            <div className="bg-[#5c554f]  text-white p-4 flex justify-between items-center shadow-md drag-handle cursor-move">
+            <div className="bg-[#5c554f] text-white p-4 flex justify-between items-center shadow-md drag-handle cursor-move">
               <div className="flex items-center space-x-2 pointer-events-none">
                 <span className="flex h-2 w-2 relative">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -72,15 +72,14 @@ export default function CastleChat() {
               <button 
                 onClick={() => setIsOpen(false)}
                 onMouseDown={(e) => e.stopPropagation()}
-                onTouchStart={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()} // ✨ スマホのタッチイベントが裏側に貫通してドラッグ判定になるのを阻止
                 className="text-gray-400 hover:text-white transition-colors text-lg p-1 cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            {/* チャット履歴エリア */}
-            <div className="flex-1 font-yuji overflow-y-auto p-4 space-y-4 bg-slate-50 text-sm">
+            <div className="flex-1 font-yuji overflow-y-auto p-4 space-y-4 bg-slate-50 text-sm touch-auto">
               {chatLog.map((chat, index) => (
                 <div key={index} className={`flex ${chat.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[75%] rounded-2xl px-4 py-2.5 shadow-sm leading-relaxed ${
@@ -101,8 +100,12 @@ export default function CastleChat() {
               )}
             </div>
 
-            {/* 入力フォーム */}
-            <form onSubmit={handleSend} className="p-3 bg-white border-t border-gray-100 flex space-x-2">
+            <form 
+              onSubmit={handleSend} 
+              className="p-3 bg-white border-t border-gray-100 flex space-x-2 touch-auto"
+              onMouseDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()} // ✨ 入力欄をタップした時にドラッグが発動するのを防止
+            >
               <input
                 type="text"
                 value={message}
@@ -110,7 +113,11 @@ export default function CastleChat() {
                 placeholder="メッセージを入力..."
                 className="flex-1 border border-gray-300 rounded-full px-4 py-2 font-yuji text-sm focus:outline-none focus:border-[#5c554f] focus:ring-1 focus:ring-[#605348] text-black"
               />
-              <button type="submit" disabled={loading} className="bg-[#5c554f] hover:bg-[#63584e] text-white px-4 py-2 rounded-full font-yuji text-sm font-medium transition-colors disabled:opacity-50">
+              <button 
+                type="submit" 
+                disabled={loading} 
+                className="bg-[#5c554f] hover:bg-[#63584e] text-white px-4 py-2 rounded-full font-yuji text-sm font-medium transition-colors disabled:opacity-50 cursor-pointer"
+              >
                 送信
               </button>
             </form>
@@ -121,6 +128,7 @@ export default function CastleChat() {
           onClick={() => {
             if (!isDragging) setIsOpen(!isOpen);
           }}
+          onMouseDown={(e) => e.stopPropagation()}
           className="w-14 h-14 bg-[#5c554f] hover:bg-[#5d4f43] text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95 group relative drag-handle cursor-move"
           aria-label="チャットを開く"
         >
