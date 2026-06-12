@@ -61,7 +61,7 @@ export default function MobileMenu({ isOpen, onClose, menuItems }: Props) {
               animate={{ scaleX: isOpen ? 1 : 0 }}
               transition={{ delay: 0.3, duration: 0.5 }}
             />
-            <nav className="flex-1 space-y-2">
+            <nav className="flex-1 space-y-2 font-yuji">
               {menuItems.map((item, index) => (
                 <Link
                     key={item.name}
